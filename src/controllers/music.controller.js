@@ -2,6 +2,7 @@ const musicModel = require('../models/music.model');
 const albumModel = require('../models/album.model');
 const { uploadFile } = require('../services/storage.service');
 const jwt = require('jsonwebtoken');
+const { get } = require('mongoose');
 
 async function createMusic(req, res) {
 
@@ -46,7 +47,7 @@ async function getAllMusics(req, res){
 
 async function getAllAlbums(req, res){
     // populate artist field with username and email from userModel
-    const albums = await albumModel.find().populate('artist', 'username email').populate('musics', 'title uri');
+    const albums = await albumModel.find().select('title artist').populate('artist', 'username email');
 
     res.status(200).json({
         message: 'Albums fetched successfully',
@@ -54,7 +55,22 @@ async function getAllAlbums(req, res){
     })
 }
 
+async function getAlbumById(req, res){
+    const { id } = req.params;
+
+    const album = await albumModel.findById(id).populate('artist', 'username email').populate('musics');
+
+    if(!album){
+        return res.status(404).json({ message: 'Album not found' });
+    }
+
+    res.status(200).json({
+        message: 'Album fetched successfully',
+        album: album,
+    })
+}
+
 
 module.exports = {
-    createMusic, createAlbum, getAllMusics, getAllAlbums
+    createMusic, createAlbum, getAllMusics, getAllAlbums, getAlbumById,
 };
