@@ -37,7 +37,10 @@ async function createAlbum(req, res) {
 
 async function getAllMusics(req, res){
     // populate artist field with username and email from userModel
-    const musics = await musicModel.find().populate('artist', 'username email');
+    const musics = await musicModel.find().skip(0).limit(20).populate('artist', 'username email');
+
+    // limit and skip for pagination, for example, to get musics from 2nd page with 2 musics per page, we can do skip(2).limit(2)
+    // const musics = await musicModel.find().skip(1).limit(2).populate('artist', 'username email');
 
     res.status(200).json({
         message: 'Musics fetched successfully',
