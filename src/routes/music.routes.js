@@ -13,7 +13,10 @@ router.post('/upload', authMiddleware.authArtist, upload.single('music'), musicC
 
 router.post('/album', authMiddleware.authArtist, musicController.createAlbum);
 
-// for normal users to view music
-router.get('/', musicController.getAllMusics);
+// for normal users and artists to view music
+router.get('/', authMiddleware.authUser, musicController.getAllMusics);
+
+// for users to get albums
+router.get('/albums', authMiddleware.authUser, musicController.getAllAlbums);
 
 module.exports = router;
